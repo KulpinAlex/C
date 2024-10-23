@@ -1,0 +1,231 @@
+#include "../s21_smartcalc.h"
+
+#test s21_smartcalc_01
+
+double answer = 0.0;
+char *str = "2*asin(0.7)-5/acos(0.1)*ln(tan(1)/atan(0.4))";
+int res = s21_smartcalc(str, 0.0, &answer);
+ck_assert_int_eq(0, res);
+ck_assert_ldouble_eq_tol(2.0*asin(0.7)-(5/acos(0.1))*log(tan(1)/atan(0.4)), answer, 1e-6);
+
+#test s21_smartcalc_02
+
+double answer = 0.0;
+char *str = "";
+int res = s21_smartcalc(str, 0.0, &answer);
+ck_assert_int_eq(0, res);
+ck_assert_ldouble_eq_tol(0.0, answer, 1e-6);
+
+#test s21_smartcalc_03
+
+double answer = 0.0;
+char *str = "+";
+int res = s21_smartcalc(str, 0.0, &answer);
+ck_assert_int_eq(1, res);
+
+#test s21_smartcalc_04
+
+double answer = 0.0;
+char *str = "asdasd";
+int res = s21_smartcalc(str, 0.0, &answer);
+ck_assert_int_eq(1, res);
+
+#test s21_smartcalc_05
+
+double answer = 0.0;
+char *str = "-";
+int res = s21_smartcalc(str, 0.0, &answer);
+ck_assert_int_eq(1, res);
+
+#test s21_smartcalc_06
+
+double answer = 0.0;
+char *str = "-1+2/3*4-5^3/(cos(100mod97))";
+int res = s21_smartcalc(str, 0.0, &answer);
+ck_assert_int_eq(0, res);
+ck_assert_ldouble_eq_tol(-1.0+8.0/3.0-(pow(5,3)/cos(fmod(100,97))), answer, 1e-6);
+
+#test s21_smartcalc_07
+
+double answer = 0.0;
+char *str = "cos1+sin2+tan3+acos3+asin5+atan6";
+int res = s21_smartcalc(str, 0.0, &answer);
+ck_assert_int_eq(1, res);
+
+#test s21_smartcalc_08
+
+double answer = 0.0;
+char *str = "tan3";
+int res = s21_smartcalc(str, 0.0, &answer);
+ck_assert_int_eq(0, res);
+ck_assert_ldouble_eq_tol(tan(3), answer, 1e-6);
+
+#test s21_smartcalc_09
+
+double answer = 0.0;
+char *str = "cos1 + sin2";
+int res = s21_smartcalc(str, 0.0, &answer);
+ck_assert_int_eq(0, res);
+ck_assert_ldouble_eq_tol(cos(1)+sin(2), answer, 1e-6);
+
+#test s21_smartcalc_10
+
+double answer = 0.0;
+char *str = "cos1+sin2+tan3+acos0.3+asin0.5+atan6";
+int res = s21_smartcalc(str, 0.0, &answer);
+ck_assert_int_eq(0, res);
+ck_assert_ldouble_eq_tol(cos(1)+sin(2)+tan(3)+acos(0.3)+asin(0.5)+atan(6), answer, 1e-6);
+
+#test s21_smartcalc_11
+
+double answer = 0.0;
+char *str = "1+ x";
+int res = s21_smartcalc(str, 0.0, &answer);
+ck_assert_int_eq(0, res);
+ck_assert_ldouble_eq_tol(1, answer, 1e-6);
+
+#test s21_smartcalc_12
+
+double answer = 0.0;
+char *str = "(1 +x )* x";
+int res = s21_smartcalc(str, 2.0, &answer);
+ck_assert_int_eq(0, res);
+ck_assert_ldouble_eq_tol(6, answer, 1e-6);
+
+#test s21_smartcalc_13
+
+double answer = 0.0;
+char *str = "2mod3 + x^x";
+int res = s21_smartcalc(str, 2.0, &answer);
+ck_assert_int_eq(0, res);
+ck_assert_ldouble_eq_tol(fmod(2,3)+pow(2,2), answer, 1e-6);
+
+#test s21_smartcalc_14
+
+double answer = 0.0;
+char *str = "ln3+log7+sqrt13";
+int res = s21_smartcalc(str, 0.0, &answer);
+ck_assert_int_eq(0, res);
+ck_assert_ldouble_eq_tol(log(3)+log10(7)+sqrt(13), answer, 1e-6);
+
+#test s21_smartcalc_15
+
+double answer = 0.0;
+char *str = "sqrt(+x)";
+int res = s21_smartcalc(str, 4.0, &answer);
+ck_assert_int_eq(0, res);
+ck_assert_ldouble_eq_tol(sqrt(4), answer, 1e-6);
+
+#test s21_smartcalc_16
+
+double answer = 0.0;
+char *str = "ln(-x)";
+int res = s21_smartcalc(str, -4.0, &answer);
+ck_assert_int_eq(0, res);
+ck_assert_ldouble_eq_tol(log(4), answer, 1e-6);
+
+#test s21_smartcalc_17
+
+double answer = 0.0;
+char *str = "ln(modx)";
+int res = s21_smartcalc(str, -4.0, &answer);
+ck_assert_int_eq(1, res);
+
+#test s21_smartcalc_18
+
+double answer = 0.0;
+char *str = "1.0/0.0";
+int res = s21_smartcalc(str, 0, &answer);
+ck_assert_int_eq(1, res);
+
+#test s21_smartcalc_19
+
+double answer = 0.0;
+char *str = "1.0mod0.0";
+int res = s21_smartcalc(str, 0, &answer);
+ck_assert_int_eq(1, res);
+
+#test s21_smartcalc_20
+
+double answer = 0.0;
+char *str = "(1+4*5/10-7^5) + (43mod 4 +12^3 - 1345/3)";
+int res = s21_smartcalc(str, 0, &answer);
+ck_assert_int_eq(0, res);
+ck_assert_ldouble_eq_tol((1.0+2.0-pow(7, 5)+(fmod(43,4)+pow(12,3)-1345.0/3.0)), answer, 1e-6);
+
+
+#test s21_smartcalc_21
+
+double answer = 0.0;
+char *str = "sin(cos(tan(1)))";
+int res = s21_smartcalc(str, 0, &answer);
+ck_assert_int_eq(0, res);
+ck_assert_ldouble_eq_tol(sin(cos(tan(1))), answer, 1e-6);
+
+#test s21_smartcalc_22
+
+double answer = 0.0;
+char *str = "sin1 ^ cos2";
+int res = s21_smartcalc(str, 0, &answer);
+ck_assert_int_eq(0, res);
+ck_assert_ldouble_eq_tol(pow(sin(1), cos(2)), answer, 1e-6);
+
+#test s21_smartcalc_23
+double answer = 0.0;
+char *str = "3 mod 4";
+int res = s21_smartcalc(str, 0, &answer);
+ck_assert_int_eq(0, res);
+ck_assert_ldouble_eq_tol(fmod(3, 4), answer, 1e-6);
+
+#test s21_smartcalc_24
+double answer = 0.0;
+char *str = "1.4 mod 0.5";
+int res = s21_smartcalc(str, 0, &answer);
+ck_assert_int_eq(0, res);
+ck_assert_ldouble_eq_tol(fmod(1.4, 0.5), answer, 1e-6);
+
+#test s21_smartcalc_25
+double answer = 0.0;
+char *str = "1.4 mod (-0.5)";
+int res = s21_smartcalc(str, 0, &answer);
+ck_assert_int_eq(0, res);
+ck_assert_ldouble_eq_tol(fmod(1.4, -0.5), answer, 1e-6);
+
+#test s21_smartcalc_26
+double answer = 0.0;
+char *str = "sin1 mod cos2";
+int res = s21_smartcalc(str, 0, &answer);
+ck_assert_int_eq(0, res);
+ck_assert_ldouble_eq_tol(fmod(sin(1), cos(2)), answer, 1e-6);
+
+#test s21_smartcalc_27
+double answer = 0.0;
+char *str = "sin1";
+int res = s21_smartcalc(str, 0, &answer);
+ck_assert_int_eq(0, res);
+ck_assert_ldouble_eq_tol(sin(1), answer, 1e-6);
+
+#test s21_smartcalc_28
+double answer = 0.0;
+char *str = "cos2";
+int res = s21_smartcalc(str, 0, &answer);
+ck_assert_int_eq(0, res);
+ck_assert_ldouble_eq_tol(cos(2), answer, 1e-6);
+
+#test s21_smartcalc_29
+double answer = 0.0;
+char *str = "(2mod)";
+int res = s21_smartcalc(str, 0, &answer);
+ck_assert_int_eq(1, res);
+
+#test s21_smartcalc_30
+double answer = 0.0;
+char *str = "(mod2)";
+int res = s21_smartcalc(str, 0, &answer);
+ck_assert_int_eq(1, res);
+
+#test s21_smartcalc_31
+double answer = 0.0;
+char *str = "(^2)";
+int res = s21_smartcalc(str, 0, &answer);
+ck_assert_int_eq(1, res);
