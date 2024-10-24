@@ -1,0 +1,20 @@
+#include "3dviewer.h"
+
+#test parser_open_file
+Points test;
+initPoint(&test);
+parser("aboba", &test);
+ck_assert_int_eq(test.error, FILE_NOT_OPEN);
+freePoint(&test);
+
+#test parser_read_cube_obj
+char *cube_file_path = "../sample/cube.obj";
+int cube_count_point = 8;
+int cube_count_poly = 36;
+Points test;
+initPoint(&test);
+parser(cube_file_path, &test);
+ck_assert_int_eq(test.error, SUCCESS);
+ck_assert_int_eq(test.count_point, cube_count_point);
+ck_assert_int_eq(test.count_poly, cube_count_poly);
+freePoint(&test);
